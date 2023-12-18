@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,7 +31,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
     // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
   }
-
-
+  
+  //область памяти приложения
+  lazy var persistentContainer: NSPersistentContainer = {
+    let container = NSPersistentContainer(name: "CoreDataModelEpisodes")
+    container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+      if let error = error as NSError? {
+        fatalError("Unresolved error \(error), \(error.userInfo)")
+      } else {
+        print("DB url - \(storeDescription.url?.absoluteString ?? "")")
+      }
+    })
+    return container
+  }()
+  
+  //функция сохранения измененных данных в БД
+  func saveContext() {
+    let context = persistentContainer.viewContext
+    if context.hasChanges {
+      do {
+        try context.save()
+      } catch {
+        fatalError("Unresolved error \(error.localizedDescription)")
+      }
+    }
+  }
 }
 
